@@ -33,8 +33,13 @@ Reply ONLY with JSON in exactly this shape:
   "steps_en": ["short step 1", "short step 2"],
   "steps_ur": ["مختصر قدم 1", "مختصر قدم 2"]
 }
-Cover: documents to bring, where to go, and fees. Keep steps short and simple.
-Write steps_ur in simple Urdu script.
+Cover: documents to bring, which counters to visit in order (counter_steps),
+where to go, and fees. Keep steps short and simple.
+Each service has a "sample_fields" list. Any information from a field in that
+list is demo placeholder data, not confirmed. When you use it, add "(Sample)"
+at the end of that step in English and "(نمونہ)" in Urdu.
+Always add a final step telling the user to confirm the details on the official
+website (see "source" in the data), because fees and rules can change.
 
 DATA:
 """ + json.dumps(SERVICES, ensure_ascii=False)

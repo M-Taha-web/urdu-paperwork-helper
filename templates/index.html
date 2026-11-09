@@ -1,68 +1,282 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>Urdu Paperwork Helper</title>
-  <style>
-    body { font-family: Arial, sans-serif; max-width: 700px; margin: 40px auto; padding: 0 16px; }
-    input { width: 70%; padding: 10px; font-size: 16px; }
-    button { padding: 10px 16px; font-size: 16px; cursor: pointer; }
-    #result { margin-top: 24px; padding: 16px; background: #f4f4f4; border-radius: 8px; }
-    .urdu { font-size: 20px; line-height: 2; }
-  </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Paperwork Helper | کاغذی کارروائی میں مدد</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&family=Noto+Nastaliq+Urdu:wght@400;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --paper: #f2f6f3;
+    --ink: #14231c;
+    --muted: #5b6e64;
+    --green: #0b6e4f;
+    --green-dark: #08533c;
+    --line: #c5d3ca;
+    --ticket: #fffdf6;
+    --amber: #e2a23b;
+    --amber-soft: #fbefd2;
+    --red: #b3261e;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; background: var(--paper); color: var(--ink);
+    font-family: "Atkinson Hyperlegible", "Segoe UI", Arial, sans-serif;
+    font-size: 18px; line-height: 1.5;
+  }
+  .urdu { font-family: "Noto Nastaliq Urdu", "Jameel Noori Nastaleeq", "Urdu Typesetting", serif; line-height: 2.2; }
+  main { max-width: 760px; margin: 0 auto; padding: 28px 16px 60px; }
+  header h1 { margin: 0 0 4px; font-size: 2rem; line-height: 1.15; }
+  header p { margin: 0; color: var(--muted); }
+  header .urdu { font-size: 1.15rem; color: var(--green-dark); }
+
+  .ask { display: flex; gap: 10px; align-items: stretch; margin-top: 24px; }
+  .ask input {
+    flex: 1; min-width: 0; padding: 14px 16px; font: inherit;
+    border: 2px solid var(--line); border-radius: 10px; background: #fff; color: var(--ink);
+  }
+  .ask input:focus { outline: none; border-color: var(--green); }
+  button { font: inherit; cursor: pointer; }
+  button:focus-visible, input:focus-visible { outline: 3px solid var(--amber); outline-offset: 2px; }
+  .mic {
+    width: 58px; border: none; border-radius: 10px; background: var(--green); color: #fff; font-size: 1.5rem;
+    display: grid; place-items: center; transition: background .15s;
+  }
+  .mic:hover { background: var(--green-dark); }
+  .mic.live { background: var(--red); animation: pulse 1.1s infinite; }
+  @keyframes pulse { 0% { box-shadow: 0 0 0 0 rgba(179,38,30,.5); } 100% { box-shadow: 0 0 0 16px rgba(179,38,30,0); } }
+  .send { padding: 0 20px; border: 2px solid var(--green); border-radius: 10px; background: #fff; color: var(--green); font-weight: 700; }
+  .send:hover { background: var(--green); color: #fff; }
+  .hint { margin: 8px 2px 0; color: var(--muted); font-size: .9rem; min-height: 1.3em; }
+
+  .chips { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 18px; }
+  .chip {
+    padding: 10px 16px; border: 2px solid var(--line); border-radius: 999px; background: #fff; color: var(--ink);
+    transition: border-color .15s, background .15s;
+  }
+  .chip:hover { border-color: var(--green); background: #e6f1ea; }
+  .chip .urdu { font-size: .95rem; margin-left: 6px; color: var(--muted); }
+
+  .langbar { display: flex; gap: 6px; margin-top: 28px; }
+  .langbar button {
+    padding: 6px 14px; border: 2px solid var(--line); background: #fff; border-radius: 8px; color: var(--muted);
+  }
+  .langbar button[aria-pressed="true"] { background: var(--ink); border-color: var(--ink); color: #fff; }
+
+  #result { margin-top: 14px; }
+  .empty, .msg { padding: 20px; border: 2px dashed var(--line); border-radius: 12px; color: var(--muted); }
+  .msg.error { border-color: var(--red); color: var(--red); border-style: solid; background: #fdeceb; }
+
+  .ticket {
+    position: relative; background: var(--ticket); border: 2px solid var(--ink); border-radius: 14px;
+    padding: 22px 22px 18px; box-shadow: 6px 6px 0 var(--green);
+  }
+  .ticket::before, .ticket::after {
+    content: ""; position: absolute; top: 74px; width: 22px; height: 22px; border-radius: 50%;
+    background: var(--paper); border: 2px solid var(--ink);
+  }
+  .ticket::before { left: -13px; clip-path: inset(0 0 0 50%); }
+  .ticket::after { right: -13px; clip-path: inset(0 50% 0 0); }
+  .ticket h2 { margin: 0; font-size: 1.5rem; line-height: 1.2; }
+  .ticket h2.urdu { font-size: 1.6rem; }
+  .progress { height: 10px; background: #e5ebe7; border-radius: 6px; overflow: hidden; margin: 14px 0 4px; }
+  .progress i { display: block; height: 100%; width: 0; background: var(--green); transition: width .25s; }
+  .progress-text { font-size: .9rem; color: var(--muted); margin-bottom: 8px; }
+  .block { border-top: 2px dashed var(--line); margin-top: 14px; padding-top: 6px; }
+  .block[dir="rtl"] { text-align: right; }
+  ul.steps { list-style: none; margin: 8px 0 0; padding: 0; }
+  ul.steps li { margin: 8px 0; }
+  ul.steps label { display: flex; gap: 12px; align-items: flex-start; cursor: pointer; padding: 8px 10px; border-radius: 8px; }
+  ul.steps label:hover { background: #f3efdf; }
+  ul.steps input { width: 22px; height: 22px; margin-top: 4px; accent-color: var(--green); flex: none; }
+  ul.steps input:checked + span { text-decoration: line-through; color: var(--muted); }
+  .badge { display: inline-block; margin: 0 8px; padding: 1px 8px; border-radius: 6px; background: var(--amber-soft); border: 1px solid var(--amber); font-size: .75rem; vertical-align: middle; }
+  .actions { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 16px; border-top: 2px dashed var(--line); padding-top: 14px; }
+  .actions button { padding: 8px 14px; border: 2px solid var(--line); border-radius: 8px; background: #fff; }
+  .actions button:hover { border-color: var(--green); }
+  .mode { margin-top: 10px; font-size: .85rem; color: var(--muted); }
+
+  .loading { display: flex; align-items: center; gap: 12px; padding: 20px; }
+  .spinner { width: 22px; height: 22px; border: 3px solid var(--line); border-top-color: var(--green); border-radius: 50%; animation: spin .8s linear infinite; }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  @media (max-width: 520px) { .ask { flex-wrap: wrap; } .ask input { flex-basis: 100%; } .send { flex: 1; padding: 12px; } .mic { width: 100%; height: 54px; } }
+  @media (prefers-reduced-motion: reduce) { * { animation: none !important; transition: none !important; } }
+  @media print { .ask, .hint, .chips, .langbar, .actions, .mode { display: none; } body { background: #fff; } .ticket { box-shadow: none; } }
+</style>
 </head>
 <body>
-  <h1>Paperwork Helper</h1>
-  <p>Ask about CNIC, domicile or passport.</p>
+<main>
+  <header>
+    <h1>Paperwork Helper</h1>
+    <p class="urdu">سرکاری کاغذات میں آسان مدد</p>
+    <p>Ask in Urdu, Roman Urdu or English. Get a checklist you can follow.</p>
+  </header>
 
-  <input id="question" dir="auto" placeholder="e.g. Mujhe naya CNIC banwana hai, kya chahiye?">
-  <button onclick="ask()">Ask</button>
+  <div class="ask">
+    <button class="mic" id="mic" aria-label="Speak your question" title="Speak in Urdu">🎤</button>
+    <input id="q" dir="auto" autocomplete="off" placeholder="Mujhe naya CNIC banwana hai, kya chahiye?">
+    <button class="send" id="send">Ask</button>
+  </div>
+  <div class="hint" id="hint" aria-live="polite">Tap the microphone and speak, or type your question.</div>
 
-  <div id="result"></div>
+  <div class="chips" role="group" aria-label="Quick questions">
+    <button class="chip" data-q="Mujhe naya CNIC banwana hai, kya chahiye?">New CNIC <span class="urdu">شناختی کارڈ</span></button>
+    <button class="chip" data-q="Domicile certificate kaise banega?">Domicile <span class="urdu">ڈومیسائل</span></button>
+    <button class="chip" data-q="Passport renew karwana hai, fee kitni hai?">Passport renewal <span class="urdu">پاسپورٹ</span></button>
+  </div>
 
-  <script>
-    function esc(t) {
-      const d = document.createElement("div");
-      d.textContent = t;
-      return d.innerHTML;
+  <div class="langbar" role="group" aria-label="Answer language">
+    <button data-lang="both" aria-pressed="true">English + اردو</button>
+    <button data-lang="en" aria-pressed="false">English</button>
+    <button data-lang="ur" aria-pressed="false">اردو</button>
+  </div>
+
+  <div id="result" aria-live="polite">
+    <div class="empty">Your checklist will appear here. Pick a service above or ask your own question.</div>
+  </div>
+</main>
+
+<script>
+  const $ = id => document.getElementById(id);
+  let current = null;       // last answer, normalised
+  let lang = "both";
+  let ticked = new Set();   // which step numbers are ticked
+
+  /* ---------- helpers ---------- */
+  function esc(t) { const d = document.createElement("div"); d.textContent = t == null ? "" : String(t); return d.innerHTML; }
+
+  // Turns "(Sample)" / "(نمونہ)" at the end of a step into a small badge
+  function stepHtml(text) {
+    const m = String(text).match(/^(.*?)\s*\((Sample|نمونہ)\)\s*$/s);
+    return m ? esc(m[1]) + '<span class="badge">' + esc(m[2]) + '</span>' : esc(text);
+  }
+
+  // Makes both AI answers and keyword-backup answers look the same
+  function normalise(data) {
+    if (data.mode === "ai") {
+      return { en: data.title_en, ur: data.title_ur, stepsEn: data.steps_en || [], stepsUr: data.steps_ur || [], mode: "ai" };
     }
+    const s = data.service, steps = [];
+    (s.documents || []).forEach(d => steps.push("Bring: " + d));
+    if (s.where) steps.push("Go to: " + s.where);
+    (s.counter_steps || []).forEach(c => steps.push(c));
+    if (s.fees) steps.push("Fees: " + s.fees);
+    (s.sample_fields || []).length && steps.push("Some details are sample data. Confirm on the official website.");
+    return { en: s.name_en, ur: s.name_ur, stepsEn: steps, stepsUr: [], mode: "keyword" };
+  }
 
-    function list(items) {
-      return "<ol>" + items.map(i => "<li>" + esc(i) + "</li>").join("") + "</ol>";
-    }
+  /* ---------- rendering ---------- */
+  function block(title, steps, rtl, key) {
+    const items = steps.map((s, i) =>
+      '<li><label><input type="checkbox" data-k="' + key + '" data-i="' + i + '"><span>' + stepHtml(s) + '</span></label></li>').join("");
+    return '<div class="block' + (rtl ? ' urdu' : '') + '"' + (rtl ? ' dir="rtl"' : '') + '>' +
+      '<h2' + (rtl ? ' class="urdu"' : '') + '>' + esc(title) + '</h2><ul class="steps">' + items + '</ul></div>';
+  }
 
-    async function ask() {
-      const box = document.getElementById("result");
-      box.textContent = "Thinking...";
-
-      const response = await fetch("/ask", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ question: document.getElementById("question").value })
+  function render() {
+    if (!current) return;
+    const showEn = lang !== "ur" || !current.stepsUr.length;
+    const showUr = lang !== "en" && current.stepsUr.length;
+    let html = '<div class="ticket"><div class="progress"><i id="bar"></i></div><div class="progress-text" id="ptext"></div>';
+    if (showEn) html += block(current.en, current.stepsEn, false, "en");
+    if (showUr) html += block(current.ur, current.stepsUr, true, "ur");
+    if (lang === "ur" && !current.stepsUr.length) html += '<p class="mode">Urdu steps are not available in backup mode, so English is shown.</p>';
+    html += '<div class="actions">' +
+      '<button id="listen">🔊 Listen</button><button id="copy">📋 Copy</button><button id="print">🖨️ Print</button></div>' +
+      '<div class="mode">' + (current.mode === "ai" ? "Answered by AI from verified service data." : "AI is busy, so this is the saved checklist.") + '</div></div>';
+    $("result").innerHTML = html;
+    document.querySelectorAll('.steps input').forEach(c => {
+      c.checked = ticked.has(c.dataset.i);
+      c.addEventListener("change", () => {
+        c.checked ? ticked.add(c.dataset.i) : ticked.delete(c.dataset.i);
+        document.querySelectorAll('.steps input[data-i="' + c.dataset.i + '"]').forEach(o => o.checked = c.checked);
+        updateProgress();
       });
-      const data = await response.json();
+    });
+    $("listen").onclick = listen; $("copy").onclick = copyText; $("print").onclick = () => window.print();
+    updateProgress();
+  }
 
-      if (!data.found) {
-        box.textContent = "Sorry, I could not find that service. Try CNIC, domicile or passport.";
-        return;
-      }
+  function updateProgress() {
+    const boxes = [...document.querySelectorAll('.steps input')];
+    if (!boxes.length) return;
+    const total = new Set(boxes.map(b => b.dataset.i)).size;
+    const done = new Set(boxes.filter(b => b.checked).map(b => b.dataset.i)).size;
+    $("bar").style.width = Math.round(done / total * 100) + "%";
+    $("ptext").textContent = done + " of " + total + " steps done";
+  }
 
-      if (data.mode === "ai") {
-        box.innerHTML =
-          "<h2>" + esc(data.title_en) + "</h2>" + list(data.steps_en) +
-          "<div dir='rtl' class='urdu'><h2>" + esc(data.title_ur) + "</h2>" + list(data.steps_ur) + "</div>";
-        return;
-      }
+  function showMsg(text, error) { $("result").innerHTML = '<div class="msg' + (error ? ' error' : '') + '">' + esc(text) + '</div>'; }
 
-      // Backup mode (AI was down)
-      const s = data.service;
-      box.innerHTML =
-        "<h2>" + esc(s.name_en) + "</h2>" +
-        "<h2 dir='rtl'>" + esc(s.name_ur) + "</h2>" +
-        "<b>Documents:</b>" + list(s.documents) +
-        "<b>Where:</b> " + esc(s.where) + "<br>" +
-        "<b>Fees:</b> " + esc(s.fees);
+  /* ---------- asking ---------- */
+  async function ask(question) {
+    question = (question || $("q").value).trim();
+    if (!question) { $("hint").textContent = "Type or speak a question first."; return; }
+    $("q").value = question;
+    $("result").innerHTML = '<div class="msg loading"><div class="spinner"></div>Finding your checklist...</div>';
+    try {
+      const res = await fetch("/ask", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ question }) });
+      if (!res.ok) throw new Error("Server error " + res.status);
+      const data = await res.json();
+      if (!data.found) { current = null; showMsg("I could not match that to a service yet. Try CNIC, domicile or passport.", false); return; }
+      current = normalise(data);
+      ticked.clear();
+      render();
+    } catch (e) {
+      showMsg("Something went wrong: " + e.message + ". Check that the server is running and try again.", true);
     }
-  </script>
+  }
+
+  /* ---------- actions ---------- */
+  function plainText() {
+    if (!current) return "";
+    const strip = s => String(s).replace(/\s*\((Sample|نمونہ)\)\s*$/, " (sample)");
+    let t = current.en + "\n" + current.stepsEn.map((s, i) => (i + 1) + ". " + strip(s)).join("\n");
+    if (current.stepsUr.length) t += "\n\n" + current.ur + "\n" + current.stepsUr.map((s, i) => (i + 1) + ". " + strip(s)).join("\n");
+    return t;
+  }
+  function copyText() {
+    navigator.clipboard.writeText(plainText()).then(() => { $("copy").textContent = "✅ Copied"; setTimeout(() => { if ($("copy")) $("copy").textContent = "📋 Copy"; }, 1500); });
+  }
+  function listen() {
+    if (!("speechSynthesis" in window)) { $("hint").textContent = "Reading aloud is not supported in this browser."; return; }
+    speechSynthesis.cancel();
+    const urdu = lang !== "en" && current.stepsUr.length;
+    const text = urdu ? current.ur + ". " + current.stepsUr.join(". ") : current.en + ". " + current.stepsEn.join(". ");
+    const u = new SpeechSynthesisUtterance(text.replace(/\((Sample|نمونہ)\)/g, ""));
+    const wanted = urdu ? "ur" : "en";
+    const voice = speechSynthesis.getVoices().find(v => v.lang.toLowerCase().startsWith(wanted));
+    if (voice) { u.voice = voice; u.lang = voice.lang; }
+    else if (urdu) { $("hint").textContent = "No Urdu voice found on this device, reading English instead."; u.text = current.en + ". " + current.stepsEn.join(". "); u.lang = "en"; }
+    speechSynthesis.speak(u);
+  }
+
+  /* ---------- microphone ---------- */
+  const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+  let rec = null;
+  $("mic").addEventListener("click", () => {
+    if (!SR) { $("hint").textContent = "Voice input needs Chrome. You can still type your question."; return; }
+    if (rec) { rec.stop(); return; }
+    rec = new SR();
+    rec.lang = "ur-PK"; rec.interimResults = true; rec.continuous = false;
+    rec.onstart = () => { $("mic").classList.add("live"); $("hint").textContent = "Listening... speak now."; };
+    rec.onresult = e => { $("q").value = [...e.results].map(r => r[0].transcript).join(" "); };
+    rec.onerror = e => { $("hint").textContent = e.error === "not-allowed" ? "Microphone blocked. Allow it in the address bar." : "Could not hear you (" + e.error + "). Try again or type."; };
+    rec.onend = () => { $("mic").classList.remove("live"); rec = null; if ($("q").value.trim()) { $("hint").textContent = "Got it."; ask(); } };
+    rec.start();
+  });
+
+  /* ---------- wiring ---------- */
+  $("send").onclick = () => ask();
+  $("q").addEventListener("keydown", e => { if (e.key === "Enter") ask(); });
+  document.querySelectorAll(".chip").forEach(c => c.onclick = () => ask(c.dataset.q));
+  document.querySelectorAll(".langbar button").forEach(b => b.onclick = () => {
+    lang = b.dataset.lang;
+    document.querySelectorAll(".langbar button").forEach(x => x.setAttribute("aria-pressed", x === b));
+    render();
+  });
+</script>
 </body>
 </html>

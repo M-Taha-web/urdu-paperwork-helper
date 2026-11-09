@@ -1,33 +1,63 @@
 {
   "cnic_new": {
-    "name_en": "New CNIC (NADRA)",
-    "name_ur": "نیا شناختی کارڈ",
-    "keywords": ["cnic", "shanakhti card", "id card", "نیا شناختی کارڈ", "nadra"],
+    "name_en": "New CNIC (NADRA), first-time",
+    "name_ur": "نیا شناختی کارڈ (پہلی بار)",
+    "keywords": ["cnic", "shanakhti", "id card", "نیا شناختی کارڈ", "شناختی کارڈ", "nadra", "نادرا"],
     "documents": [
-      "DRAFT: parent's CNIC",
-      "DRAFT: B-Form or birth certificate",
-      "TODO: confirm the full list on nadra.gov.pk"
+      "Original B-Form or birth certificate (child registration certificate issued by NADRA)",
+      "Parent's CNIC (original and photocopy)",
+      "If both parents have passed away: death certificates and a close relative's CNIC"
     ],
-    "where": "TODO: nearest NADRA registration center",
-    "fees": "TODO: copy from nadra.gov.pk",
-    "source": "https://nadra.gov.pk"
+    "counter_steps": [
+      "Take a token at the reception desk",
+      "Go to the document verification counter",
+      "Give your fingerprints and have your photo taken",
+      "Pay the fee at the cashier and keep the receipt"
+    ],
+    "where": "Any NADRA Registration Centre (NRC). First-time CNIC cannot be done fully online.",
+    "fees": "Standard CNIC: Free (normal, about 15 days); Rs. 1,150 (urgent, about 12 days); Rs. 2,150 (executive, about 6 days). Smart NIC: Rs. 750 / Rs. 1,500 / Rs. 2,500.",
+    "sample_fields": ["counter_steps"],
+    "source": "https://www.nadra.gov.pk/feeStructure"
   },
   "domicile": {
-    "name_en": "Domicile Certificate",
-    "name_ur": "ڈومیسائل سرٹیفکیٹ",
+    "name_en": "Domicile Certificate (Punjab)",
+    "name_ur": "ڈومیسائل سرٹیفکیٹ (پنجاب)",
     "keywords": ["domicile", "domecile", "ڈومیسائل"],
-    "documents": ["TODO: copy from your district's official page"],
-    "where": "TODO: DC office / district administration",
-    "fees": "TODO",
-    "source": "TODO: official link"
+    "documents": [
+      "Your CNIC copy (or B-Form if under 18)",
+      "Parent's CNIC copy",
+      "Proof of residence, such as a recent utility bill",
+      "2 passport-size photographs"
+    ],
+    "counter_steps": [
+      "Create an account on the Punjab domicile portal or visit an e-Khidmat Markaz",
+      "Fill in the application and upload or hand over your documents",
+      "Pay the fee through e-Pay Punjab",
+      "Receive the certificate by courier or collect it from the centre"
+    ],
+    "where": "Punjab domicile web portal or mobile app (run by PITB), or an e-Khidmat Markaz or district facilitation centre.",
+    "fees": "Rs. 550 in total (Rs. 200 base fee + Rs. 300 e-affidavit + Rs. 50 service charge), paid through e-Pay Punjab. Reported as approved in April 2026.",
+    "sample_fields": ["documents", "counter_steps"],
+    "source": "Punjab domicile portal / district government website"
   },
   "passport_renewal": {
     "name_en": "Passport Renewal",
     "name_ur": "پاسپورٹ کی تجدید",
     "keywords": ["passport", "pasport", "پاسپورٹ"],
-    "documents": ["TODO: copy from passport.gov.pk"],
-    "where": "TODO: regional passport office",
-    "fees": "TODO: copy from passport.gov.pk",
-    "source": "https://www.passport.gov.pk"
+    "documents": [
+      "Original CNIC and a photocopy (must be valid)",
+      "Your old passport (even if expired) and a photocopy",
+      "Paid fee receipt or challan"
+    ],
+    "counter_steps": [
+      "Pay the fee and keep the challan or receipt",
+      "Book or confirm your appointment at the Regional Passport Office",
+      "Submit your documents at the document counter",
+      "Give biometrics and have your photo taken"
+    ],
+    "where": "Any Regional Passport Office, or apply online at onlinemrp.dgip.gov.pk if your passport has expired or has less than 1 year left.",
+    "fees": "e-Passport, 36 pages: Rs. 9,000 normal / Rs. 15,000 urgent for 5 years; Rs. 13,500 normal / Rs. 22,500 urgent for 10 years.",
+    "sample_fields": ["counter_steps"],
+    "source": "https://dgip.gov.pk"
   }
 }
