@@ -8,6 +8,7 @@
     input { width: 70%; padding: 10px; font-size: 16px; }
     button { padding: 10px 16px; font-size: 16px; cursor: pointer; }
     #result { margin-top: 24px; padding: 16px; background: #f4f4f4; border-radius: 8px; }
+    .urdu { font-size: 20px; line-height: 2; }
   </style>
 </head>
 <body>
@@ -20,29 +21,47 @@
   <div id="result"></div>
 
   <script>
+    function esc(t) {
+      const d = document.createElement("div");
+      d.textContent = t;
+      return d.innerHTML;
+    }
+
+    function list(items) {
+      return "<ol>" + items.map(i => "<li>" + esc(i) + "</li>").join("") + "</ol>";
+    }
+
     async function ask() {
-      const question = document.getElementById("question").value;
+      const box = document.getElementById("result");
+      box.textContent = "Thinking...";
+
       const response = await fetch("/ask", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ question: question })
+        body: JSON.stringify({ question: document.getElementById("question").value })
       });
       const data = await response.json();
-      const box = document.getElementById("result");
 
       if (!data.found) {
         box.textContent = "Sorry, I could not find that service. Try CNIC, domicile or passport.";
         return;
       }
 
+      if (data.mode === "ai") {
+        box.innerHTML =
+          "<h2>" + esc(data.title_en) + "</h2>" + list(data.steps_en) +
+          "<div dir='rtl' class='urdu'><h2>" + esc(data.title_ur) + "</h2>" + list(data.steps_ur) + "</div>";
+        return;
+      }
+
+      // Backup mode (AI was down)
       const s = data.service;
-      const docs = s.documents.map(d => "<li>" + d + "</li>").join("");
       box.innerHTML =
-        "<h2>" + s.name_en + "</h2>" +
-        "<h2 dir='rtl'>" + s.name_ur + "</h2>" +
-        "<b>Documents:</b><ul>" + docs + "</ul>" +
-        "<b>Where:</b> " + s.where + "<br>" +
-        "<b>Fees:</b> " + s.fees;
+        "<h2>" + esc(s.name_en) + "</h2>" +
+        "<h2 dir='rtl'>" + esc(s.name_ur) + "</h2>" +
+        "<b>Documents:</b>" + list(s.documents) +
+        "<b>Where:</b> " + esc(s.where) + "<br>" +
+        "<b>Fees:</b> " + esc(s.fees);
     }
   </script>
 </body>
