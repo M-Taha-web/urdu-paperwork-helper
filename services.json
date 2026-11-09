@@ -1,0 +1,33 @@
+{
+  "cnic_new": {
+    "name_en": "New CNIC (NADRA)",
+    "name_ur": "نیا شناختی کارڈ",
+    "keywords": ["cnic", "shanakhti card", "id card", "نیا شناختی کارڈ", "nadra"],
+    "documents": [
+      "DRAFT: parent's CNIC",
+      "DRAFT: B-Form or birth certificate",
+      "TODO: confirm the full list on nadra.gov.pk"
+    ],
+    "where": "TODO: nearest NADRA registration center",
+    "fees": "TODO: copy from nadra.gov.pk",
+    "source": "https://nadra.gov.pk"
+  },
+  "domicile": {
+    "name_en": "Domicile Certificate",
+    "name_ur": "ڈومیسائل سرٹیفکیٹ",
+    "keywords": ["domicile", "domecile", "ڈومیسائل"],
+    "documents": ["TODO: copy from your district's official page"],
+    "where": "TODO: DC office / district administration",
+    "fees": "TODO",
+    "source": "TODO: official link"
+  },
+  "passport_renewal": {
+    "name_en": "Passport Renewal",
+    "name_ur": "پاسپورٹ کی تجدید",
+    "keywords": ["passport", "pasport", "پاسپورٹ"],
+    "documents": ["TODO: copy from passport.gov.pk"],
+    "where": "TODO: regional passport office",
+    "fees": "TODO: copy from passport.gov.pk",
+    "source": "https://www.passport.gov.pk"
+  }
+}
